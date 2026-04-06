@@ -1,8 +1,7 @@
-/* DN1010 Experimental Interaction, Ashley Hi 2026
- * Week 5 - Computer Vision
- * Colour Tracking
- */
-
+//Celeste Final Project: Colour Tracking and Mandala Drawing
+// target = array: can hold multiple instances of an object
+//  [i] stands for the loop variable 
+ 
 
 let symmetry = 6;
 let angle = 360 / symmetry;
@@ -117,35 +116,46 @@ function draw() {
       }
     }
 
+// IF MATCHING PIXELS WERE FOUND
     if (target[i].count > 0) {
-    // if matching pixels were found
-
+ 
 // DRAWING MANDALA USING TRACKED MOVEMENT
       push();
 
 translate(width/2, height/2);
 
+// convert tracked position to center-based coordinates
 let x = target[i].avgX - width/2;
 let y = target[i].avgY - height/2;
 
-let px = target[i].prevX - width/2;
-let py = target[i].prevY - height/2;
+//let px = target[i].prevX - width/2;
+//let py = target[i].prevY - height/2;
 
-stroke(target[i].rgb);
-strokeWeight(3);
+//Draw lines only if we have a previous position 
+if (target [i].prevX != null && target[i].prevY !=null){
 
+
+//draw mandala using tracked colour
 for (let j = 0; j < symmetry; j++) {
 
+//stroke(target[i].rgb);
+//strokeWeight(3);
+   
+  
 rotate(angle);
+stroke(target[i].rgb); // uses detected colour
+strokeWeight(3);
+line (target [i].prevX, target[i].prevY, x, y);  // from previous to current position
 
-line(px, py, x, y);
+//line(0, 0, x, y);
 
+// Mirror reflection
 push();
 scale(1,-1);
-line(px, py, x, y);
+line(target[i].prevX, target[i].prevY, x, y);
 pop();
-
-}
+ }
+} 
 
 pop();
 // AFTER MANDALA DRAWING, SAVE PREVIOUS POSITION
@@ -188,7 +198,7 @@ function keyTyped(){
   if (key === "i"){
     threshold += 2.5;
   } 
-  // increase threshold
+  // increase threshold: higher threshold= more colours detected (mandala only appears within a certain threshold hmm)
   
   else if (key === "d") {
     threshold -= 2.5;
@@ -209,9 +219,11 @@ function TargetColor(_color) { //creates colour tracking object
   this.blue = blue(_color);
 // extract RGB components 
   
-  this.prevX = 0;
-  this.prevY = 0;
-  // STORE PREVIOUS TRACKED POSITION (FOR MANDALA)
+  
+// STORE PREVIOUS TRACKED POSITION (FOR MANDALA)
+  this.prevX = null;
+  this.prevY = null;
+  
   
   
 //1B- used to average position
@@ -222,7 +234,7 @@ function TargetColor(_color) { //creates colour tracking object
   
 //3A clears values after each frame
   this.reset = function () {
-    this.avgX = 0;
+  this.avgX = 0;
   this.avgY = 0;
   this.count = 0;
   
