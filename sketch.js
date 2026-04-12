@@ -1,270 +1,75 @@
 ////Celeste Final Project: Colour Tracking and Mandala Drawing
-//// target = array: can hold multiple instances of an object
-////  [i] stands for the loop variable 
-// 
-//
-//let symmetry = 6;
-//let angle = 360 / symmetry;
-////calculate the angle at which each section is rotated.
-//let mandalaLayer; //graphics layer to draw persistent mandala
-//
-//
-//var video; //creates webcam video
-//var target = []; //Stores selected colors to track: each clicked colour becomes a TargetColor object
-//var threshold = 25; //Controls how similar colours must be to count as "matching" larger number = greater tolerance
-//
-//function setup() {
-//  createCanvas(640, 480);
-//  pixelDensity(1); //fixes pixel scaling issues
-//  video = createCapture(VIDEO, { flipped: true }); //turns on webcam, flips video like a mirror
-//  video.size(640, 480); // video resolution, same size as canvas
-//  video.hide();//hides raw html video
-//  noStroke();
-//  
-////Create consistent graphics layer
-//mandalaLayer =  createGraphics (width, height);
-//mandalaLayer.angleMode(DEGREES);
-//}
-//
-//function draw() {
-//  background(0); //clears screen to blank each frame
-//  image(video, 0, 0); //draw webcam video onto canvas, or live webcam
-//  image (mandalaLayer, 0,0);//create persistent mandala lines
-//  
-//  
-//  video.loadPixels();
-//  // loads pixel data to read colours
-//  //moved into draw loop
-//  
-//  
-//   // SCANS PIXELS FOR COLOUR
-//  for (var i = 0; i < target.length; i++) {  
-//
-// // text that shows RGB values of each tracked colour
-//    text(
-//      "color " + i + ": " +
-//      target[i].red + ", " +
-//      target[i].green + ", " +
-//      target[i].blue,
-//      10,
-//      40 + i * 20
-//    );
-//    
-//    video.loadPixels();
-//
-//    varclosestX = 0;
-//    var closestY = 0; 
-//
-//    for (var x = 0; x < video.width; x += 5) {
-//      for (var y = 0; y < video.height; y += 5) {
-//        //loops through video pixels and skips every 3 pixels
-//
-//        var index = (x + y * video.width) * 4; // finds pixel location inside pixel array
-//        var redSource = video.pixels[index + 0];
-//        var greenSource = video.pixels[index + 1];
-//        var blueSource = video.pixels[index + 2];
-//        // Extract RGB values from video pixel
-//        
-//// COMPARING COLOURS
-//        var d = dist(
-//          redSource,
-//          greenSource,
-//          blueSource,
-//          target[i].red,
-//          target[i].green,
-//          target[i].blue
-//        );
-//        //Calculate distance between colours 
-//        //Smaller distance = more similar 
-//        
-//// IF COLOUR MATCHES
-//
-//        if (d < threshold) { //If colour is similar enough 
-//          target[i].avgX += x;
-//          target[i].avgY += y;
-//          target[i].count++;
-//          // Adds pixel position to average calculation
-//        }
-//      }
-//    }
-//
-//// IF MATCHING PIXELS WERE FOUND
-//    if (target[i].count > 0) {
-// 
-//  //Draw Mandala on Mandala Layer
-//  let currentX = target[i].avgX / target[i].count;
-//  let currentY = target[i].avgY/ target[i].count;
-//      
-//
-// // draws a dot at tracked position
-//      push();
-//      stroke(0);
-//      strokeWeight(4);
-//      fill(target[i].rgb);
-//      ellipse(target[i].avgX, target[i].avgY, 16, 16);
-//    
-//      pop();
-//
-// 
-//   // Draw onto the persistent Mandala Layer
-//      if (target[i].prevX !== null) {
-//        mandalaLayer.push();
-//        mandalaLayer.translate(width / 2, height / 2);
-//        
-//        let mx = currentX - width / 2;
-//        let my = currentY - height / 2;
-//        let px = target[i].prevX - width / 2;
-//        let py = target[i].prevY - height / 2;
-//
-//// symmetry function
-//        for (let j = 0; j < symmetry; j++) {
-//          mandalaLayer.rotate(angle);
-//          mandalaLayer.stroke(target[i].rgb);
-//          mandalaLayer.strokeWeight(3);
-//          mandalaLayer.line(px, py, mx, my);
-//          
-//          // Mirroring logic
-//          mandalaLayer.push();
-//          mandalaLayer.scale(1, -1);
-//          mandalaLayer.line(px, py, mx, my);
-//          mandalaLayer.pop();
-//        }
-//        mandalaLayer.pop();
-//      }
-//
-//      // Update previous positions for the next frame
-//      target[i].prevX = currentX;
-//      target[i].prevY = currentY;
-//    } else {
-//      // If color is lost, reset prevX/Y so it doesn't "jump" when found again
-//      target[i].prevX = null;
-//      target[i].prevY = null;
-//    }
-//
-//    target[i].reset(); // Clear totals for next frame
-//  }
-//
-//  image(mandalaLayer, 0, 0); // Show the drawing on top
-//
-// 
-//// Writes text label
-//      text("ID :", target[i].avgX + 20, target[i].avgY + 7);
-//      text(i, target[i].avgX + 40, target[i].avgY + 7);
-//    }
-//
-//
-// function mousePressed(){ //when user clicks: get colour from video + store it as new Targetcolour object
-//   //old codetarget.push(new TargetColor(video.get(mouseX, mouseY)));
-//   
-//  let newTarget = new TargetColor(video.get(mouseX, mouseY));
-//  newTarget.prevX = mouseX;
-//  newTarget.prevY = mouseY;
-//  target.push(newTarget);
-//}
-//  
-//  
-//  // UI Text writes the word "threshold" for colour tracking
-//  //shows threshold value on screen
-//  noStroke();
-//  fill(0);
-//  text("Threshold = ", 10, 20); //position of text
-//  text(threshold, 80, 20); //
-//  
-//
-////4B
-//function keyTyped(){
-//  if (key === "i"){
-//    threshold += 2.5;
-//  } 
-//  // increase threshold: higher threshold= more colours detected (mandala only appears within a certain threshold hmm)
-//  
-//  else if (key === "d") {
-//    threshold -= 2.5;
-//  }
-////decrease threshold
-//  
-//  if (key === "r") {
-//    target =[];
-//  
-//// reset all tracked colours
-//  }
-//} 
-//
-//function TargetColor(_color) { //creates colour tracking object
-//  this.rgb = _color; //stores full colour
-//  this.red = red(_color);
-//  this.green = green(_color);
-//  this.blue = blue(_color);
-//// extract RGB components 
-//  
-//  
-//// STORE PREVIOUS TRACKED POSITION (FOR MANDALA)
-//  this.prevX = null;
-//  this.prevY = null;
-//  
-//  
-//  
-////1B- used to average position
-//  this.avgX = 0;
-//  this.avgY = 0;
-//  this.count = 0;
-//
-//  
-////3A clears values after each frame
-//  this.reset = function () {
-//  this.avgX = 0;
-//  this.avgY = 0;
-//  this.count = 0;
-//  
-//};
-//}
-//
-//
-//
-//
-//
+
 
 let symmetry = 6; // creating 6 mandala slices
 let angle = 360 / symmetry; // calculating how much to rotate each section, so the lines spread in a circle 
-let mandalaLayer; // creates a variable that stores an off-screen drawing layer for the mandala , so  mandala lines don't disappear immediately after being drawn
+let mandalaLayer; // creates a variable that stores an off-screen drawing layer for the mandala, so  mandala lines don't disappear immediately after being drawn
 var video; // Stores webcam video
 var target = []; // creates an array to store tracked colours, each clicked colour becomes a TargetColour object
-var threshold = 25; // larger value = more colours match
+var threshold = 25; // Controls how similar colours must be to count as "matching" larger number = greater tolerance
+let strokeW = 3; // default strokeweight is 3
 
 function setup() {
-  createCanvas(640, 480);
+  createCanvas(1250, 800);
   pixelDensity(1);
-  video = createCapture(VIDEO, { flipped: true });
-  video.size(640, 480);
+  video = createCapture(VIDEO, { flipped: true }); // turn on web cam, flips it like a mirror
+  video.size(800, 600); // makes video size
   video.hide();
 
-  mandalaLayer = createGraphics(width, height);
-  mandalaLayer.angleMode(DEGREES);
+  mandalaLayer = createGraphics(800, 600); // Defining variable to create a consistent graphics layer 
+  mandalaLayer.angleMode(DEGREES);//makes rotation use degrees instead of radians
 }
 
 function draw() {
-  background(0);
-  image(video, 0, 0); // Background video
-  
-  video.loadPixels();
+  background(255);//changes screen to black each frame
+  image(video, 0, 0); // Uses webcam video as background
 
+// Draw UI panel background
+  fill(40);           // dark grey
+  noStroke();
+  rect(800, 0, 240, 600);
+
+// 1.Loads pixel data to read colours 
+  video.loadPixels(); 
+
+  // Loops through each tracked colour in the target array
   for (var i = 0; i < target.length; i++) {
-    // 1. Label the tracked colors at the top left
+    // [i] stands for the loop variable 
+
+    
+  // Draw colour swatch on the right to show which colours are being tracked 
+    fill(target[i].rgb);
+    stroke(0);
+    rect(1050, 25 + i * 25, 15, 15);
+
+    // Draw RGB label text
     fill(255);
     noStroke();
-    text("color " + i + ": " + Math.round(target[i].red) + "," + Math.round(target[i].green) + "," + Math.round(target[i].blue), 10, 40 + i * 20);
-
+    fill(0);  
+    text(
+    "Color " + i + ": " +
+    Math.round(target[i].red) + "," +
+    Math.round(target[i].green) + "," +
+    Math.round(target[i].blue),
+      1075,
+      36 + i * 25
+      );
+    
     // 2. Scan for color matches
-    for (var x = 0; x < video.width; x += 5) {
-      for (var y = 0; y < video.height; y += 5) {
+    for (var x = 0; x < video.width; x += 5) { //loops across the video vertically, skipping 5 pixels (speedier)
+      for (var y = 0; y < video.height; y += 5) { //loops across video horizontally, skipping 5 pixels 
+      // finds pixel location within pixel index
         var index = (x + y * video.width) * 4;
+      // reads red, green and blue values of the pixels 
         var r = video.pixels[index + 0];
         var g = video.pixels[index + 1];
         var b = video.pixels[index + 2];
 
-        var d = dist(r, g, b, target[i].red, target[i].green, target[i].blue);
+        var d = dist(r, g, b, target[i].red, target[i].green, target[i].blue);// calculates how similar pixel colour is to tracked colour 
 
-        if (d < threshold) {
+       // checks if colours are close enough to the selected colour, based on the threshold value 
+        if (d < threshold) { 
+      // calculates the average centre of the matching colour pixels 
           target[i].avgX += x;
           target[i].avgY += y;
           target[i].count++;
@@ -272,94 +77,131 @@ function draw() {
       }
     }
 
-    // 3. If the color is found, calculate center and draw
-    if (target[i].count > 0) {
+    // 3. If the color is found, calculate center of the matching pixels (to draw an ellipse at that point)
+    if (target[i].count > 0) {// runs only if matching pixels were found
+     // calculates average position of the colour (Where ellipse position is from)
       let currentX = target[i].avgX / target[i].count;
       let currentY = target[i].avgY / target[i].count;
 
-      // Draw the "Pen" dot at the ACTUAL center
+      // Draws an ellipse that shows the tracked colour at the centre of the detected colour area. the ellipse acts as a "pen" to draw the mandala
       push();
       stroke(255);
       strokeWeight(2);
       fill(target[i].rgb);
-      ellipse(currentX, currentY, 16, 16);
+      ellipse(currentX, currentY, 16, 16);// Draws a circle on webcam feed to show where computer thinks the object is 
       
-      // Label the pen with its ID
+      // Label the ellipse "pen" with its ID
       fill(255);
       noStroke();
       text("ID: " + i, currentX + 15, currentY);
       pop();
 
-      // Draw onto the Mandala Layer
-      if (target[i].prevX !== null) {
-        mandalaLayer.push();
-        mandalaLayer.translate(width / 2, height / 2);
+    // 4. Draw onto the Mandala Layer
+      // Converting the coordinates to a centre-based canvas
+      if (target[i].prevX !== null) { // only draws if there is a previous position
+        mandalaLayer.push(); // saves drawing settings
+        mandalaLayer.translate(800 / 2, 600 / 2);// (0,0) origin is moved to the centre of the canvas 
         
-        let mx = currentX - width / 2;
-        let my = currentY - height / 2;
-        let px = target[i].prevX - width / 2;
-        let py = target[i].prevY - height / 2;
-
-        for (let j = 0; j < symmetry; j++) {
-          mandalaLayer.rotate(angle);
-          mandalaLayer.stroke(target[i].rgb);
-          mandalaLayer.strokeWeight(3);
-          mandalaLayer.line(px, py, mx, my);
+        // calculate current ellipse position relative to the centre (So rotations and designs start from the centre point)
+        let mx = currentX - 800 / 2; // middle of screen horizontally 
+        let my = currentY - 600 / 2; // middle of screen vertically 
+        
+        // calculate previous ellipse position relative to the centre
+        let px = target[i].prevX - 800 / 2;
+        let py = target[i].prevY - 600 / 2;
+        // Tracking the current and previous position allows movement to be tracked over time
+        
+    // Draw rotated mandala copies 
+        for (let j = 0; j < symmetry; j++) { // repeats drawing 6 times
+          mandalaLayer.rotate(angle); // rotates mandala by 60 degrees
+          mandalaLayer.stroke(target[i].rgb); // makes line colour match tracked colour RGB
+          mandalaLayer.strokeWeight(strokeW); // controls stroke thickness
+          mandalaLayer.line(px, py, mx, my); // draws the main mandala line, connecting the tracked movement of the ellipse to the mandala pattern (current and previous position)
           
           mandalaLayer.push();
-          mandalaLayer.scale(1, -1);
-          mandalaLayer.line(px, py, mx, my);
+          mandalaLayer.scale(1, -1); // flips vertically to create a reflection, like a kaleidoscope
+          mandalaLayer.line(px, py, mx, my); // draws mirrored line
           mandalaLayer.pop();
         }
         mandalaLayer.pop();
       }
-
+    // Save Current position 
       target[i].prevX = currentX;
       target[i].prevY = currentY;
+      // stores current position for next frame
     } else {
       target[i].prevX = null;
       target[i].prevY = null;
+      // stops drawing lines if no colour is found
     }
 
     target[i].reset(); 
-  } // END of color loop
+  } // Clears tracking data to end the color loop
 
-  // 4. Draw the UI and the Mandala Layer
-  image(mandalaLayer, 0, 0);
+  // 5. Draw the UI text and the Mandala Layer
+  image(mandalaLayer, 0, 0);// displays stored mandala drawing 
   
-  fill(255);
-  text("Threshold = " + threshold, 10, 20);
+  // instruction text 
+    fill(255);
+    textStyle(BOLD);
+    text("Threshold = " + threshold, 815, 40); // text to show current threshold value
+    text("Click video to track a colour", 815, 60);
+    text("Wave coloured object to draw", 815, 80);
+  
+    text("Press R to reset drawing", 815, 120); 
+    text("Press I to increase threshold value", 815, 140);
+    text("Press D to decrease threshold value", 815, 160);
+  
+    text("Press ] to increase stroke weight", 815, 200 );
+    text("Press [ to decrease stroke weight", 815, 220);
+  
+  
+  
 } // END of draw()
 
-function mousePressed() {
-  let col = video.get(mouseX, mouseY);
+function mousePressed() { 
+  let col = video.get(mouseX, mouseY); //if mouse is clicked, gets colour of pxiel under mouse 
   let newTarget = new TargetColor(col);
   newTarget.prevX = mouseX;
   newTarget.prevY = mouseY;
   target.push(newTarget);
 }
 
-function keyTyped() {
+function keyTyped() { //key functions to increase and decrease threshold
   if (key === "i") threshold += 2.5;
   if (key === "d") threshold -= 2.5;
-  if (key === "r") {
+  
+  // increase or decrease stroke weight 
+  if (key === "]") strokeW += 1; 
+  if (key === "[") strokeW =max(1, strokeW - 1); 
+  
+  // reset mandala drawing 
+  if (key === "r") { 
     target = [];
     mandalaLayer.clear();
+    threshold = 25;// resets threshold level back to default
+    StrokeW = 3;
+ 
   }
 }
 
+// Target = array: can hold multiple instances of an object
 function TargetColor(_color) {
+  // stores specific RGB values 
   this.rgb = _color;
   this.red = red(_color);
   this.green = green(_color);
   this.blue = blue(_color);
+  // stores previous X/Y coordinates, which is needed for drawing continuous lines
   this.prevX = null;
   this.prevY = null;
+  // stores variables needed to find the centre of the color every frame
   this.avgX = 0;
   this.avgY = 0;
   this.count = 0;
 
-  this.reset = function() {
+  // resets avg position of coloured pixels 
+  this.reset = function() { 
     this.avgX = 0;
     this.avgY = 0;
     this.count = 0;
