@@ -1,6 +1,6 @@
 //Celeste Final Project: Colour Tracking and Mandala Drawing
 //This program uses webcam color tracking to allow users to draw kaleidoscopic mandala patterns by waving colored objects. 
-// Thresholds and stroke weights are adjustable, multiple colors can be tracked at once 
+// Thresholds and stroke weights are adjustable and multiple colors can be tracked at once 
 
 
 let symmetry = 6; // creating 6 mandala slices
@@ -10,12 +10,14 @@ var video; // Stores webcam video
 var target = []; // creates an array to store tracked colours, each clicked colour becomes a TargetColour object
 var threshold = 25; // Controls how similar colours must be to count as "matching" larger number = greater tolerance
 let strokeW = 3; // default strokeweight is 3
+let isDrawing = true; // New variable to track if the user is currently drawing or not
+let showLabels = true; // New variable to show that labels are on by default
 
 function setup() {
   createCanvas(1250, 800);
   pixelDensity(1);
   video = createCapture(VIDEO, { flipped: true }); // turn on web cam, flips it like a mirror
-  video.size(800, 600); // makes video size
+  video.size(800, 600); // makes video size slightly smaller than canvas, so there is space for the UI
   video.hide();
 
   mandalaLayer = createGraphics(800, 600); // Defining variable to create a consistent graphics layer 
@@ -27,9 +29,9 @@ function draw() {
   image(video, 0, 0); // Uses webcam video as background
 
 // Draw UI panel background
-  fill(40);           // dark grey
+  fill(245, 208, 215);           // pink
   noStroke();
-  rect(800, 0, 240, 600);
+  rect(810, 10, 270, 600, 20); // last number creates rounded edges
 
 // 1.Loads pixel data to read colours 
   video.loadPixels(); 
@@ -42,7 +44,7 @@ function draw() {
   // Draw colour swatch on the right to show which colours are being tracked 
     fill(target[i].rgb);
     stroke(0);
-    rect(1050, 25 + i * 25, 15, 15);
+    rect(1100, 25 + i * 25, 15, 15);
 
     // Draw RGB label text
     fill(255);
@@ -53,7 +55,7 @@ function draw() {
     Math.round(target[i].red) + "," +
     Math.round(target[i].green) + "," +
     Math.round(target[i].blue),
-      1075,
+      1125,
       36 + i * 25
       );
     
@@ -86,20 +88,27 @@ function draw() {
       let currentY = target[i].avgY / target[i].count;
 
       // Draws an ellipse that shows the tracked colour at the centre of the detected colour area. the ellipse acts as a "pen" to draw the mandala
+   if (showLabels) {
       push();
       stroke(255);
       strokeWeight(2);
       fill(target[i].rgb);
       ellipse(currentX, currentY, 16, 16);// Draws a circle on webcam feed to show where computer thinks the object is 
-      
+                       
       // Label the ellipse "pen" with its ID
+      
       fill(255);
       noStroke();
       text("ID: " + i, currentX + 15, currentY);
-      pop();
+      }
+      //fill(255);
+      //noStroke();
+      //text("ID: " + i, currentX + 15, currentY);
+      //pop();
 
     // 4. Draw onto the Mandala Layer
       // Converting the coordinates to a centre-based canvas
+      if (isDrawing) { // Only run this block if drawing is toggled ON
       if (target[i].prevX !== null) { // only draws if there is a previous position
         mandalaLayer.push(); // saves drawing settings
         mandalaLayer.translate(800 / 2, 600 / 2);// (0,0) origin is moved to the centre of the canvas 
@@ -127,6 +136,7 @@ function draw() {
         }
         mandalaLayer.pop();
       }
+      }
     // Save Current position 
       target[i].prevX = currentX;
       target[i].prevY = currentY;
@@ -144,18 +154,23 @@ function draw() {
   image(mandalaLayer, 0, 0);// displays stored mandala drawing 
   
   // instruction text 
-    fill(255);
+    fill(38, 8, 21); // maroon colour
     textStyle(BOLD);
-    text("Threshold = " + threshold, 815, 40); // text to show current threshold value
-    text("Click video to track a colour", 815, 60);
-    text("Wave coloured object to draw mandala", 815, 80);
+    text("Threshold = " + threshold, 820, 60); // text to show current threshold value
+    text("Click video to track a colour", 820, 80);
+    text("Wave coloured object to draw mandala", 820, 100);
   
-    text("Press R to reset drawing", 815, 120); 
-    text("Press I to increase threshold value", 815, 140);
-    text("Press D to decrease threshold value", 815, 160);
+    text("Press R to reset drawing", 820, 140); 
+    text("Press I to increase threshold value", 820, 160);
+    text("Press D to decrease threshold value", 820, 180);
   
-    text("Press ] to increase stroke weight", 815, 200 );
-    text("Press [ to decrease stroke weight", 815, 220);
+    text("Press S to stop drawing", 820, 220 );
+  
+    text("Press ] to increase stroke weight", 820, 260 );
+    text("Press [ to decrease stroke weight", 820, 280);
+  
+    text("Symmetry = " + symmetry, 820, 40); // Shows current slices
+    text("Press 1-9 to change symmetry ", 820, 300);
   
   
   
@@ -177,17 +192,33 @@ function keyTyped() { //key functions to increase and decrease threshold
   if (key === "]") strokeW += 1; 
   if (key === "[") strokeW =max(1, strokeW - 1); 
   
+  //increase or decrease mandala symmetry 
+  if (key >= '1' && key <= '9') {
+    symmetry = int(key); // Set symmetry to the number pressed
+    angle = 360 / symmetry; // Recalculate the angle for the new symmetry
+  }
+  
+// Creates switch to toggle drawing on and off
+  if (key === "s") {
+    isDrawing = !isDrawing; // This flips true to false, or false to true
+    if (key === "s") {
+    showLabels = !showLabels;
+  }
+  }
+
+  
   // reset mandala drawing 
   if (key === "r") { 
     target = [];
     mandalaLayer.clear();
     threshold = 25;// resets threshold level back to default
-    strokeW = 3;
+    strokeW = 3;// resets line thickness to default levels
+    isDrawing = true; // Ensure drawing is enabled after a reset
  
   }
 }
 
-// Target = array: can hold multiple instances of an object
+// Target = array: can hold multiple instances of an object, stores
 function TargetColor(_color) {
   // stores specific RGB values 
   this.rgb = _color;
