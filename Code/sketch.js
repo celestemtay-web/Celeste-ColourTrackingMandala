@@ -36,9 +36,10 @@ function draw() {
 // 1.Loads pixel data to read colours 
   video.loadPixels(); 
 
-  // Loops through each tracked colour in the target array
+  // Loops through each tracked colour in the target array (for every colour inside the list of target colours)
   for (var i = 0; i < target.length; i++) {
     // [i] stands for the loop variable 
+    // target 
 
     
   // Draw colour swatch on the right to show which colours are being tracked 
@@ -101,10 +102,7 @@ function draw() {
       noStroke();
       text("ID: " + i, currentX + 15, currentY);
       }
-      //fill(255);
-      //noStroke();
-      //text("ID: " + i, currentX + 15, currentY);
-      //pop();
+    
 
     // 4. Draw onto the Mandala Layer
       // Converting the coordinates to a centre-based canvas
@@ -181,7 +179,7 @@ function mousePressed() {
   let newTarget = new TargetColor(col);
   newTarget.prevX = mouseX;
   newTarget.prevY = mouseY;
-  target.push(newTarget);
+  target.push(newTarget);// adds a new target to the target list (array)
 }
 
 function keyTyped() { //key functions to increase and decrease threshold
@@ -209,7 +207,7 @@ function keyTyped() { //key functions to increase and decrease threshold
   
   // reset mandala drawing 
   if (key === "r") { 
-    target = [];
+    target = []; 
     mandalaLayer.clear();
     threshold = 25;// resets threshold level back to default
     strokeW = 3;// resets line thickness to default levels
